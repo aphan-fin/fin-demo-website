@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Annie's Fin Demo</title>
+<style>
+  :root {
+    --off-black: #111111;
+    --off-white: #FAF9F6;
+    --chalk: #F1EEE9;
+    --canvas: #E7E3DB;
+    --clay: #D3CEC6;
+    --fin-orange: #FF5600;
+    --sans: "Saans", -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono: "Saans Mono", "SF Mono", ui-monospace, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: var(--off-white);
+    color: var(--off-black);
+    font-family: var(--sans);
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 460px;
+    padding: 48px 32px;
+    text-align: center;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .logo { width: 64px; display: block; }
+
+  h1 {
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 29px;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  .rule {
+    width: 32px;
+    height: 3px;
+    background: var(--fin-orange);
+    margin: 0 auto 28px;
+  }
+
+  .pill {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--off-black);
+    background: var(--chalk);
+    border: 1px solid var(--clay);
+    border-radius: 999px;
+    padding: 8px 16px;
+    margin-bottom: 28px;
+  }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  button {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 11px 20px;
+    height: 40px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+
+  button:hover { opacity: 0.85; }
+
+  .btn-primary { background: var(--off-black); color: var(--off-white); }
+  .btn-secondary { background: transparent; color: var(--off-black); border: 1px solid var(--clay); }
+
+  .panel {
+    margin-top: 20px;
+    text-align: left;
+    background: var(--chalk);
+    border: 1px solid var(--clay);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .panel[hidden] { display: none; }
+
+  .field { margin-bottom: 14px; }
+
+  .field label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6b6b6b;
+    margin-bottom: 6px;
+  }
+
+  .field input {
+    width: 100%;
+    height: 38px;
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 0 10px;
+    border-radius: 6px;
+    border: 1px solid var(--clay);
+    background: var(--off-white);
+    color: var(--off-black);
+  }
+
+  .radio-group { margin-bottom: 16px; }
+  .radio-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 13px;
+  }
+  .radio-row input { width: auto; height: auto; }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6b6b6b;
+    margin: 18px 0 8px;
+  }
+
+  .attr-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .attr-row input { flex: 1; }
+  .attr-row button {
+    height: 38px;
+    padding: 0 12px;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .attr-add {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .attr-add input {
+    flex: 1;
+    height: 38px;
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 0 10px;
+    border-radius: 6px;
+    border: 1px solid var(--clay);
+    background: var(--off-white);
+    color: var(--off-black);
+  }
+  .attr-add button {
+    height: 38px;
+    padding: 0 16px;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .verify-box {
+    background: #FFF6E0;
+    border: 1px solid #E9D9A8;
+    border-radius: 8px;
+    padding: 14px;
+    margin-top: 16px;
+    font-size: 12px;
+    color: #6b5a2a;
+  }
+  .verify-box .field { margin-bottom: 8px; }
+  .verify-box .field label { color: #6b5a2a; }
+
+  .panel-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+  }
+
+  .status-msg {
+    margin-top: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: #6b6b6b;
+    min-height: 14px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 2544.1 882.4" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#111111" d="M759.8,563.7c68.4,0,123.7-56,122.5-124.6-1.1-67.2-57.3-120.5-124.6-120.5h-47c-35.1,0-67.4-12.4-92.7-32.9-2.5-2-2.5-5.7,0-7.7,25.3-20.6,57.5-32.9,92.7-32.9h46.9c68.4,0,125.2-55,124.7-123.4C881.8,53.3,827.7.5,760.7,0c-68.4-.5-123.4,56.3-123.4,124.7v46.9c0,35.1-12.4,67.4-32.9,92.7-2,2.5-5.7,2.5-7.7,0-20.6-25.3-32.9-57.5-32.9-92.7v-49C563.7,54.2,507.7-1.1,439.1,0c-67.2,1.1-120.5,57.4-120.5,124.6v47c0,35.1-12.4,67.4-32.9,92.7-2,2.5-5.7,2.5-7.7,0-20.6-25.3-32.9-57.5-32.9-92.7v-49C245.1,53.3,187.7-2.6,117.8.1,54.3,2.5,2.5,54.3.1,117.8c-2.6,69.9,53.2,127.3,122.4,127.3h49c35.1,0,67.4,12.4,92.7,32.9,2.5,2,2.5,5.7,0,7.7-25.3,20.6-57.5,32.9-92.7,32.9h-47C57.4,318.6,1.1,371.9,0,439.1c-1.1,67.2,54.1,124.6,122.5,124.6h49c35.1,0,67.4,12.4,92.7,32.9,2.5,2,2.5,5.7,0,7.7-25.3,20.6-57.5,32.9-92.7,32.9h-49c-69.3,0-125.1,57.5-122.4,127.3,2.4,63.5,54.2,115.3,117.7,117.7,69.8,2.6,127.3-53.2,127.3-122.4v-49c0-35.1,12.4-67.4,32.9-92.7,2-2.4,5.7-2.4,7.7,0,20.6,25.3,32.9,57.5,32.9,92.7v47c0,67.2,53.3,123.4,120.5,124.6,68.6,1.2,124.6-54.1,124.6-122.5v-49c0-35.1,12.4-67.4,32.9-92.7,2-2.5,5.7-2.5,7.7,0,20.6,25.3,32.9,57.5,32.9,92.7v49c0,69.3,57.5,125.1,127.3,122.4,63.5-2.4,115.3-54.2,117.7-117.7,2.6-69.8-53.2-127.3-122.4-127.3h-49c-35.1,0-67.4-12.4-92.7-32.9-2.5-2-2.5-5.7,0-7.7,25.3-20.6,57.5-32.9,92.7-32.9h49.1ZM392.2,245.1h98c35.1,0,67.4,12.4,92.7,32.9,2.4,2,2.4,5.7,0,7.7-25.3,20.6-57.5,32.9-92.7,32.9h-98c-35.1,0-67.4-12.4-92.7-32.9-2.4-2-2.4-5.7,0-7.7,25.3-20.6,57.5-32.9,92.7-32.9ZM245.2,441.2v-49c0-35.1,12.4-67.4,32.9-92.7,2-2.4,5.7-2.4,7.7,0,20.6,25.3,32.9,57.5,32.9,92.7v98c0,35.1-12.3,67.4-32.9,92.7-2,2.4-5.7,2.4-7.7,0-20.6-25.3-32.9-57.5-32.9-92.7v-49h0ZM490.3,637.2h-98c-35.1,0-67.4-12.4-92.7-32.9-2.4-2-2.4-5.7,0-7.7,25.3-20.6,57.5-32.9,92.7-32.9h98c35.1,0,67.4,12.4,92.7,32.9,2.4,2,2.4,5.7,0,7.7-25.3,20.6-57.5,32.9-92.7,32.9ZM637.3,441.2v49c0,35.1-12.4,67.4-32.9,92.7-2,2.5-5.7,2.5-7.7,0-20.6-25.3-32.9-57.5-32.9-92.7v-98c0-35.1,12.4-67.4,32.9-92.7,2-2.4,5.7-2.4,7.7,0,20.6,25.3,32.9,57.5,32.9,92.7v49ZM2091.7,307.2v-80.4h-142.9v642.9h142.9v-333.3c0-131.7,69.9-199.4,169.6-199.4s140.6,81.1,139.9,200.1v332.6h142.9v-360.1c.7-210.6-109.4-293.8-247.8-295.3-77.5,0-160.1,27.5-204.5,93ZM1806,168.1c46.4,0,84-37.6,84-84S1852.4,0,1806,0s-84,37.6-84,84,37.6,84,84,84ZM1877.4,869.7h-142.9V226.9h142.9v642.9ZM1270.3,869.7h-142.9V12.6h535.7v142.9h-392.9v214.3h392.9v142.9h-392.9v357.1Z"/>
+      </svg>
+      <h1>Demo</h1>
+    </div>
+    <div class="rule"></div>
+
+    <div class="pill" id="statusPill">app f20axmpm &middot; user user_wbrayeydq</div>
+
+    <div class="actions">
+      <button class="btn-secondary" id="appBtn">Switch App ID</button>
+      <button class="btn-primary" id="switchBtn">Switch user</button>
+      <button class="btn-secondary" id="resetBtn">Reset user</button>
+    </div>
+
+    <div class="panel" id="appPanel" hidden>
+      <div class="field">
+        <label>App ID</label>
+        <input id="app_id" value="f20axmpm">
+      </div>
+      <div class="panel-actions">
+        <button class="btn-primary" id="appLoadBtn">Load</button>
+        <button class="btn-secondary" id="appCancelBtn">Cancel</button>
+      </div>
+    </div>
+
+    <div class="panel" id="panel" hidden>
+      <div class="section-label">Demo as</div>
+      <div class="radio-group">
+        <label class="radio-row"><input type="radio" name="mode" value="anonymous"> Visitor (anonymous)</label>
+        <label class="radio-row"><input type="radio" name="mode" value="random"> Random user (fake data)</label>
+        <label class="radio-row"><input type="radio" name="mode" value="custom" checked> Custom user</label>
+      </div>
+
+      <div id="customFields">
+        <div class="field">
+          <label>User ID</label>
+          <input id="user_id" value="user_wbrayeydq">
+        </div>
+        <div class="field">
+          <label>Name (optional)</label>
+          <input id="name" placeholder="e.g. John Doe">
+        </div>
+        <div class="field">
+          <label>Email (optional)</label>
+          <input id="email" placeholder="e.g. john@example.com">
+        </div>
+
+        <div class="section-label">Custom attributes</div>
+        <div id="attrList"></div>
+        <div class="attr-add">
+          <input id="attrName" placeholder="Attribute name">
+          <input id="attrValue" placeholder="Attribute value">
+          <button class="btn-secondary" id="attrAddBtn" type="button">Add</button>
+        </div>
+
+        <div class="verify-box">
+          <div class="field">
+            <label>Identity verification JWT (optional)</label>
+            <input id="jwt" value="eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoidXNlcl93YnJheWV5ZHEiLCJleHAiOjE3OTEzMjgyNjV9.qt92g_vY9d38dsWtof4A0jVkDqFOMMtzr6aBAddUnTQ">
+          </div>
+          If you get a 403, this workspace may require identity verification &mdash; paste the JWT here. Leave blank if verification is turned off.
+        </div>
+      </div>
+
+      <div class="panel-actions">
+        <button class="btn-primary" id="loadBtn">Load</button>
+        <button class="btn-secondary" id="cancelBtn">Cancel</button>
+      </div>
+    </div>
+
+    <div class="status-msg" id="statusMsg"></div>
+  </div>
+
+  <script>
+    var KEY = "fin_demo_state";
+    var DEFAULT_STATE = {
+      appId: "f20axmpm",
+      userId: "user_wbrayeydq",
+      name: "",
+      email: "",
+      jwt: "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoidXNlcl93YnJheWV5ZHEiLCJleHAiOjE3OTEzMjgyNjV9.qt92g_vY9d38dsWtof4A0jVkDqFOMMtzr6aBAddUnTQ",
+      attrs: [],
+      mode: "custom"
+    };
+
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+    var state = saved || DEFAULT_STATE;
+
+    var settings = { api_base: "https://api-iam.intercom.io", app_id: state.appId };
+    if (state.userId) settings.user_id = state.userId;
+    if (state.name) settings.name = state.name;
+    if (state.email) settings.email = state.email;
+    if (state.jwt) settings.intercom_user_jwt = state.jwt;
+    (state.attrs || []).forEach(function (a) { if (a.name) settings[a.name] = a.value; });
+
+    window.intercomSettings = settings;
+  </script>
+  <script>
+    (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',w.intercomSettings);}else{var d=document;var i=function(){i.c(arguments);};i.q=[];i.c=function(args){i.q.push(args);};w.Intercom=i;var l=function(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/' + window.intercomSettings.app_id;var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);};if(document.readyState==='complete'){l();}else if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();
+  </script>
+
+  <script>
+    var appPanel = document.getElementById("appPanel");
+    var panel = document.getElementById("panel");
+    var statusPill = document.getElementById("statusPill");
+    var customFields = document.getElementById("customFields");
+    var attrList = document.getElementById("attrList");
+    var attrs = (state.attrs || []).slice();
+
+    function renderPill() {
+      statusPill.textContent = "app " + state.appId + " · " + (state.userId ? "user " + state.userId : "anonymous");
+    }
+    renderPill();
+
+    // prefill fields from current state
+    document.getElementById("app_id").value = state.appId;
+    document.getElementById("user_id").value = state.userId;
+    document.getElementById("name").value = state.name;
+    document.getElementById("email").value = state.email;
+    document.getElementById("jwt").value = state.jwt;
+    document.querySelector('input[name="mode"][value="' + state.mode + '"]').checked = true;
+
+    function renderAttrs() {
+      attrList.innerHTML = "";
+      attrs.forEach(function (a, idx) {
+        var row = document.createElement("div");
+        row.className = "attr-row";
+        row.innerHTML =
+          '<input value="' + a.name.replace(/"/g, "&quot;") + '" disabled>' +
+          '<input value="' + a.value.replace(/"/g, "&quot;") + '" disabled>' +
+          '<button class="btn-secondary" type="button" data-idx="' + idx + '">&times;</button>';
+        row.querySelector("button").addEventListener("click", function () {
+          attrs.splice(idx, 1);
+          renderAttrs();
+        });
+        attrList.appendChild(row);
+      });
+    }
+    renderAttrs();
+
+    document.getElementById("attrAddBtn").addEventListener("click", function () {
+      var n = document.getElementById("attrName").value.trim();
+      var v = document.getElementById("attrValue").value.trim();
+      if (!n) return;
+      attrs.push({ name: n, value: v });
+      document.getElementById("attrName").value = "";
+      document.getElementById("attrValue").value = "";
+      renderAttrs();
+    });
+
+    function toggleCustomFields() {
+      var mode = document.querySelector('input[name="mode"]:checked').value;
+      customFields.style.display = mode === "custom" ? "block" : "none";
+    }
+    document.querySelectorAll('input[name="mode"]').forEach(function (r) {
+      r.addEventListener("change", toggleCustomFields);
+    });
+    toggleCustomFields();
+
+    document.getElementById("appBtn").addEventListener("click", function () {
+      panel.hidden = true;
+      appPanel.hidden = !appPanel.hidden;
+    });
+    document.getElementById("appCancelBtn").addEventListener("click", function () {
+      appPanel.hidden = true;
+    });
+    document.getElementById("appLoadBtn").addEventListener("click", function () {
+      var newState = Object.assign({}, state, { appId: document.getElementById("app_id").value.trim() || "f20axmpm" });
+      localStorage.setItem(KEY, JSON.stringify(newState));
+      location.reload();
+    });
+
+    document.getElementById("switchBtn").addEventListener("click", function () {
+      appPanel.hidden = true;
+      panel.hidden = !panel.hidden;
+    });
+    document.getElementById("cancelBtn").addEventListener("click", function () {
+      panel.hidden = true;
+    });
+
+    var FIRST_NAMES = ["Alex", "Jordan", "Taylor", "Morgan", "Casey", "Riley", "Sam", "Jamie", "Drew", "Avery"];
+    var LAST_NAMES = ["Rivera", "Chen", "Patel", "Kim", "Nguyen", "Brooks", "Diaz", "Foster", "Hayes", "Ortiz"];
+
+    function randomFakeUser() {
+      var first = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
+      var last = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
+      var suffix = Math.random().toString(36).slice(2, 6);
+      return {
+        userId: "user_" + suffix,
+        name: first + " " + last,
+        email: (first + "." + last + suffix).toLowerCase() + "@example.com"
+      };
+    }
+
+    document.getElementById("loadBtn").addEventListener("click", function () {
+      var mode = document.querySelector('input[name="mode"]:checked').value;
+      var newState;
+
+      if (mode === "anonymous") {
+        newState = { appId: state.appId, userId: "", name: "", email: "", jwt: "", attrs: [], mode: mode };
+      } else if (mode === "random") {
+        var fake = randomFakeUser();
+        newState = { appId: state.appId, userId: fake.userId, name: fake.name, email: fake.email, jwt: "", attrs: [], mode: mode };
+      } else {
+        newState = {
+          appId: state.appId,
+          userId: document.getElementById("user_id").value.trim(),
+          name: document.getElementById("name").value.trim(),
+          email: document.getElementById("email").value.trim(),
+          jwt: document.getElementById("jwt").value.trim(),
+          attrs: attrs,
+          mode: mode
+        };
+      }
+
+      localStorage.setItem(KEY, JSON.stringify(newState));
+      location.reload();
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", function () {
+      var newState = { appId: state.appId, userId: "", name: "", email: "", jwt: "", attrs: [], mode: "anonymous" };
+      localStorage.setItem(KEY, JSON.stringify(newState));
+      location.reload();
+    });
+  </script>
+</body>
+</html>
